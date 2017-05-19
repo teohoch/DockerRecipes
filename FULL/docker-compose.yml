@@ -4,6 +4,7 @@ services:
   proxy:
     build: nginx/
     container_name: "portainer-proxy"
+    restart: always
     ports:
       - "80:80"
     depends_on:
@@ -19,12 +20,14 @@ services:
   templates:
     image: portainer/templates
     container_name: "portainer-templates"
+    restart: always
     networks:
       - local
 
   portainer:
     image: portainer/portainer
     container_name: "portainer-app"
+    restart: always
     command: --templates http://templates/templates.json
     networks:
       - local
@@ -32,33 +35,28 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/portainer/data:/data
 
-  watchtower:
-    image: centurylink/watchtower
-    container_name: "portainer-watchtower"
-    command: --cleanup portainer-app
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-
   postdb:
     image: postgres:alpine
     container_name: "postdb"
+    restart: always
     environment: 
       POSTGRES_PASSWORD: "mysecretpassword"
       OWNCLOUD_PASSWORD: "mysecretpassword"
       RAILS_PASSWORD: "mysecretpassword"
     volumes:
       - ./scripts:/docker-entrypoint-initdb.d
-      - ./postgres-data:/var/lib/postgresql/data
+      - /home/teohoch/postgres-data:/var/lib/postgresql/data
     networks:
       - owncloud
       - rails
   owncloud:
     container_name: "owncloud"
     image: owncloud
+    restart: always
     links:
       - postdb
     volumes:
-      - ./owncloud-data:/var/www/html
+      - /home/teohoch/owncloud-data:/var/www/html
     networks:
       - owncloud
       - local
@@ -66,6 +64,7 @@ services:
   rails:
     build: rails/
     container_name: "rails"
+    restart: always
     depends_on:
       - postdb
     links:
@@ -83,6 +82,7 @@ services:
         ELASTIC_VERSION: 5.3.2
         ES_DOWNLOAD_URL: https://artifacts.elastic.co/downloads/elasticsearch
     container_name: elasticsearch
+    restart: always
     environment:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
@@ -108,6 +108,13 @@ services:
       args:
         ELASTIC_VERSION: 5.3.2
         LOGSTASH_DOWNLOAD_URL: https://artifacts.elastic.co/downloads/logstash/logstash-5.3.2.tar.gz
+    container_name: logstash
+    restart: always
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5044:5044
+      - 9600:9600
     networks:
       - elknet
       - local
@@ -118,6 +125,10 @@ services:
       args:
         KIBANA_VERSION: 5.3.2
         KIBANA_DOWNLOAD_URL: https://artifacts.elastic.co/downloads/kibana
+    container_name: kibana
+    restart: always
+    depends_on:
+      - elasticsearch
     networks:
       - elknet
       - local
