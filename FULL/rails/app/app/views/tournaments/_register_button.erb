@@ -1,0 +1,7 @@
+<div class="<%= wrapper_class %>">
+  <%= simple_form_for(inscription) do |f| %>
+      <%= f.input :tournament_id, as: :hidden %>
+      <%= f.button(:submit_tag, (t 'register'), class: 'btn btn-success', data: {confirm: (t 'are_you_sure')}) %>
+  <% end %>
+</div>
+

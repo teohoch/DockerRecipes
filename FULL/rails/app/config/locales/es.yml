@@ -1,0 +1,224 @@
+es:
+  hello: "Hello world"
+  sign_up: "Registrarse"
+  sign_in: "Iniciar sesion"
+  sign_out: "Cerrar sesion"
+  recover_password: "¿Olvidaste tu contraseña?"
+  input_your_data: "Por favor, ingrese sus datos:"
+  new_password: "Cambie su contraseña:"
+  change_password: "Cambiar contraseña"
+
+  register_phase: "Periodo de Inscripcion"
+  ongoing: "En proceso"
+  finalized: "Finalizado"
+  create: "Crear"
+  edit: "Editar"
+  destroy: "Destruir"
+  show: "Mostrar"
+  new_m: "Nuevo"
+  new_f: "Nueva"
+  back: "Atras"
+  succesfully_created: "creado con exito."
+  succesfully_destroyed: "eliminado con exito."
+  succesfully_subscribed: "Inscripcion realizada con exito."
+  succesfully_unsubscribed: "Desinscripcion realizada con exito."
+  register: "Inscribirse"
+  unregister: "Desinscribir"
+  are_you_sure: "¿Esta seguro que desea realizar esta accion?"
+  positive: "Sí"
+  negatory: "No"
+  validate: "Validar"
+  not_asigned: "No Asignado"
+  of: "de"
+  all_matches: "Todas las Partidas"
+  logged_in: "Sesión iniciada como"
+
+  title: "Ranking Jugadores"
+
+  first_place:  "Primer Lugar"
+  second_place: "Segundo Lugar"
+  third_place:  "Tercer Lugar"
+  fourth_place: "Cuarto Lugar"
+  fith_place:   "Quinto Lugar"
+  sixth_place:  "Sexto Lugar"
+  invalid_place: "Posicion Invalida"
+
+  start: "Iniciar"
+  end: "Finalizar"
+
+  ended_f: "Finalizada"
+  ended_m: "Finalizado"
+  waiting: "En espera"
+
+  match_blank_error: "Los datos de la partida no pueden estar en blanco."
+
+
+  activerecord:
+      models:
+        user:
+          one: "Usuario"
+          other: "Usuarios"
+        tournament:
+          one: "Torneo"
+          other: "Torneos"
+        inscription:
+          one: "Inscripcion"
+          other: "Inscripciones"
+        match:
+          one: "Partida"
+          other: "Partidas"
+
+      attributes:
+        user:
+          email: "E-mail"
+          name: "Nombre"
+          position_general: "Ranking General"
+          position_free: "Ranking Libre"
+          position_tournament: "Ranking Torneos"
+          matches_played: "Partidas Jugadas"
+
+        tournament:
+          name: "Nombre"
+          number_players: "Numero maximo de participantes"
+          prize: "Premio"
+          entrance_fee: "Coste de Entrada"
+          date: "Fecha de Inicio"
+          user: "Encargado"
+          rounds: "N° de Rondas"
+          mode: "Modalidad de Torneo"
+          winning_mode: "Modalidad de Victoria"
+          status: "Estado"
+          board_size: "Tamaño del Tablero"
+          registered: "Jugadores Inscritos"
+          current_round: "Ronda Actual"
+          officer: "Encargado"
+        match:
+          n_players: "N° de Jugadores"
+          round: "Ronda"
+          pyramidal_position: "Posicion en la piramide"
+          date: "Fecha"
+          location: "Ubicacion"
+          validated: "Validado"
+        user_match:
+          user: "Jugador"
+          vp: "Puntos de Victoria"
+
+
+
+      errors:
+        models:
+          tournament:
+            attributes:
+              entrance_fee:
+                blank: "El coste de entrada no puede estar en blanco."
+              name:
+                blank: "El nombre del Torneo no puede estar en blanco."
+              prize:
+                blank: "El Premio del Torneo no puede estar en blanco."
+              date:
+                blank: "La fecha de inicio del torneo no puede estar en blanco."
+              general_mode:
+                blank: "La modalidad del torneo no puede estar en blanco."
+              number_players:
+                blank: "El numero maximo de participantes no puede estar en blanco."
+                inclusion: "El numero de jugadores debe estar entre 3 y 16."
+              rounds:
+                blank: "El numero de rondas no puede estar en blanco."
+              mode:
+                blank: "El numero de ganadores por partida no puede estar en blanco."
+              board_size:
+                blank: "El tamaño del tablero no puede estar en blanco."
+                inclusion: "El tamaño del tablero es invalido. Solo existen tableros de 4 y 6 personas."
+          inscription:
+            attributes:
+              base:
+                oncourse: "El Torneo esta en curso, no es posible desinscribir."
+          match:
+            attributes:
+              n_players:
+                inclusion: "La partida debe tener por lo menos 3 jugadores y a lo mas 6."
+              date:
+                blank: "La fecha no puede estar en blanco."
+                client_presence: "La fecha no puede estar en blanco."
+              location:
+                blank: "La ubicacion no puede estar en blanco."
+                client_presence: "La ubicacion no puede estar en blanco."
+        messages:
+                record_invalid: "La validación falló: %{errors}"
+                restrict_dependent_destroy:
+                  has_one: No se puede eliminar el registro porque existe un %{record} dependiente
+                  has_many: No se puede eliminar el registro porque existen %{record} dependientes
+
+  unauthorized:
+      update:
+        tournament: "¡Usted no tiene permiso para editar este torneo!"
+
+  helpers:
+    submit:
+      tournament:
+        create: "Crear Torneo"
+      match:
+        create: "Crear Partida"
+        update: "Actualizar Partida"
+      user:
+        submit: "Iniciar Sesión"
+        create: "Registrar nuevo Usuario"
+
+  date:
+      order:
+        - :day
+        - :month
+        - :year
+
+  currency_precision: 0
+
+  tournamet_modes:
+    free4all: "Victoria por Ranking"
+    pyramidal: "Torneo por Eliminatorias"
+    not_allowed: "Esta configuracion no esta permitida, elija otro numero de participantes."
+    instantwinner: "Victoria inmediata"
+    onewinner: "Pasa uno"
+    twowinner: "Pasan dos"
+    threewinner: "Pasan tres"
+    fourwinner: "Pasan cuatro"
+    fivewinner: "Pasan cinco"
+    pyramidal_tooltip: "De cada partida, cuantos jugadores pasan a la siguiente etapa. Por ejemplo, de selecionar 2, los dos jugadores con mayor puntaje en la partida pasan a la siguiente etapa."
+    ranking_tooltip: "Numero de rondas de todos contra todos en el torneo"
+
+  table_text:
+      sProcessing:      "Procesando..."
+      sLengthMenu:      "Mostrar _MENU_ registros"
+      sZeroRecords:    "No se encontraron resultados"
+      sEmptyTable:      "Ningún dato disponible en esta tabla"
+      sInfo:           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros"
+      sInfoEmpty:      "Mostrando registros del 0 al 0 de un total de 0 registros"
+      sInfoFiltered:   "(filtrado de un total de _MAX_ registros)"
+      sInfoPostFix:    ""
+      sSearch:         "Buscar:"
+      sUrl:            ""
+      sInfoThousands:  ","
+      sLoadingRecords: "Cargando..."
+      sFirst:          "Primero"
+      sLast:           "Último"
+      sNext:           "Siguiente"
+      sPrevious:       "Anterior"
+      sSortAscending:  ": Activar para ordenar la columna de manera ascendente"
+      sSortDescending: ": Activar para ordenar la columna de manera descendente"
+  match:
+    update:
+      success: "Partida actualizada correctamente."
+    validate:
+      success: "Partida validada correctamente."
+  user_match:
+    update:
+      success: "Relacion Usuario/Partida actualizada correctamente."
+  invalid: "Invalido"
+  pyramid_generator:
+    board_size_error: "Esta configuracion de tablero no esta permitida"
+    minimum_participants: "El minimo de participantes en un torneo es 3 personas. Por favor agregue mas participantes e intente mas tarde."
+    invalid_parameter_combination: "Combinacion invalida de propiedades del Torneo. Cambie la cantidad de ganadores por ronda o el numero de jugadores, y pruebe nuevamente."
+  tournament:
+    show:
+      table_name: "Datos del Torneo"
+      rounds_title: "Partidas del Torneo"
+  round: "Ronda"

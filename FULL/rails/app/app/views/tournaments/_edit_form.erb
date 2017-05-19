@@ -1,0 +1,16 @@
+<%= simple_form_for(@tournament) do |f| %>
+    <%= f.error_notification %>
+
+    <div class="form-inputs">
+      <%= f.input :name %>
+      <%= f.input :number_players, input_html: { min: '0', step: 1 }%>
+      <%= f.input :prize %>
+      <%= f.input :entrance_fee, input_html: { min: '0', step: 1 } %>
+      <%= f.association :officer %>
+    </div>
+
+    <div class="form-actions">
+      <%= f.button :submit %>
+    </div>
+<% end %>
+<br>

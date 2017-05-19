@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  postgres:
+    image: postgres:alpine
+    container_name: "postgres-db"
+    environment: 
+      POSTGRES_PASSWORD: "mysecretpassword"
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+
+    ports:
+      - "5435:5432"
+    networks:
+      - local
+
+
+networks:
+  local:
+    driver: bridge

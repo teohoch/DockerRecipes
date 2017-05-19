@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+  postdb:
+    image: postgres:alpine
+    container_name: "postdb"
+    environment: 
+      POSTGRES_PASSWORD: "mysecretpassword"
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5435:5432"
+    networks:
+      - local
+  rails:
+    build: rails/
+    container_name: "rails"
+    ports:
+      - "3000:3000"
+    links:
+      - postdb
+    environment:
+      CATAN_LEADERBOARDS_DATABASE_PASSWORD: "mysecretpassword"
+    networks:
+      - local
+
+networks:
+  local:
+    driver: bridge

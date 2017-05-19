@@ -1,0 +1,43 @@
+
+<h1> <%= Tournament.model_name.human(count: 2) %> </h1>
+
+<table id="tournaments" class="display" data-language='<%= datatable_language %>'>
+  <thead>
+    <tr>
+      <th> <%= Tournament.human_attribute_name(:name) %>  </th>
+      <th> <%= Tournament.human_attribute_name(:mode) %>  </th>
+      <th><%= Tournament.human_attribute_name(:number_players) %></th>
+      <th><%= Tournament.human_attribute_name(:prize) %></th>
+      <th><%= Tournament.human_attribute_name(:entrance_fee) %></th>
+      <th><%= Tournament.human_attribute_name(:user) %></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @tournaments.each do |tournament| %>
+      <tr>
+        <td><%= tournament.name %></td>
+        <td><%= tournament.mode %></td>
+        <td><%= tournament.number_players %></td>
+        <td><%= tournament.prize %></td>
+        <td><%= tournament.entrance_fee %></td>
+        <td><%= tournament.officer %></td>
+        <td><%= link_to (t 'show'), tournament %></td>
+        <td>
+          <% if can? :update, tournament.raw_model %><%= link_to (t 'edit'), edit_tournament_path(tournament) %>
+          <% end %></td>
+        <td>
+          <% if can? :destroy, tournament.raw_model %><%= link_to (t 'destroy'), tournament, method: :delete, data: {confirm: 'Are you sure?'} %>
+          <% end %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to ([(t 'create'), Tournament.model_name.human].join(' ')), new_tournament_path, :class => 'btn btn-default' %>

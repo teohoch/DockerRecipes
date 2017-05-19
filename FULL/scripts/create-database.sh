@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+    CREATE USER catan_leaderboards CREATEDB PASSWORD '$RAILS_PASSWORD';
+    CREATE USER owncloud CREATEDB PASSWORD '$OWNCLOUD_PASSWORD';   
+    CREATE DATABASE owncloud;
+    GRANT ALL PRIVILEGES ON DATABASE owncloud TO owncloud; 
+EOSQL

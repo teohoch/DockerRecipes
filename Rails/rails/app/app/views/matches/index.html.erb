@@ -1,0 +1,77 @@
+<% unless current_user.nil? %>
+    <h2><%= [Match.model_name.human(count: 2), (t 'of'), current_user.name].join(' ') %></h2>
+    <table id="matches" class="display" data-language='<%= datatable_language %>'>
+      <thead>
+      <tr>
+        <th> <%= Match.human_attribute_name(:date) %> </th>
+        <th> <%= Match.human_attribute_name(:location) %> </th>
+        <th> <%= Match.human_attribute_name(:n_players) %> </th>
+        <th> <%= Match.human_attribute_name(:validated) %> </th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @user_matches.each do |match| %>
+          <tr>
+            <td><%= match.date %></td>
+            <td><%= match.location %></td>
+            <td><%= match.n_players %></td>
+            <td><%= match.validated_human %></td>
+            <td> <%= link_to (t 'show'), match, :class => 'btn btn-default' %></td>
+            <td>
+              <% if can? :update, match %>
+                  <%= link_to (t 'edit'), edit_match_path(match), :class => 'btn btn-default' %>
+              <% end %>
+            </td>
+            <td>
+              <% if can? :destroy, match %>
+                  <%= link_to (t 'destroy'), match, method: :delete, data: {confirm: 'Are you sure?'}, :class => 'btn btn-default' %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+    <br>
+
+<% end %>
+<h2><%= t 'all_matches' %></h2>
+<table id="matches" class="display" data-language='<%= datatable_language %>'>
+  <thead>
+  <tr>
+    <th> <%= Match.human_attribute_name(:date) %> </th>
+    <th> <%= Match.human_attribute_name(:location) %> </th>
+    <th> <%= Match.human_attribute_name(:n_players) %> </th>
+    <th> <%= Match.human_attribute_name(:validated) %> </th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @matches.each do |match| %>
+      <tr>
+        <td><%= match.date %></td>
+        <td><%= match.location %></td>
+        <td><%= match.n_players %></td>
+        <td><%= match.validated_human %></td>
+        <td> <%= link_to (t 'show'), match, :class => 'btn btn-default' %></td>
+        <td>
+          <% if can? :update, match %><%= link_to (t 'edit'), edit_match_path(match), :class => 'btn btn-default' %>
+          <% end %></td>
+        <td>
+          <% if can? :destroy, match %><%= link_to (t 'destroy'), match, method: :delete, data: {confirm: 'Are you sure?'}, :class => 'btn btn-default' %>
+          <% end %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to ([(t 'create'), Match.model_name.human].join(' ')), new_match_path, :class => 'btn btn-default' %>
+

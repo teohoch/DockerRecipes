@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Catan Leaderboards</title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body data-locale="<%= I18n.locale %>"  >
+  <%= nav_bar brand: 'Ranking Catan', brand_link: root_path, responsive: true, inverse: false do %>
+
+      <% if user_signed_in? %>
+          <%= menu_group pull: :left do %>
+              <%= menu_item (Tournament.model_name.human(count: 2)), tournaments_path, turbolinks: false %>
+              <%= menu_item (Match.model_name.human(count: 2)), matches_path, turbolinks: false %>
+          <% end %>
+
+        <%= menu_group pull: :right do %>
+              <%= menu_item ([(t 'logged_in'), '<strong>', current_user.email, '</strong>'].join(' ')).html_safe, edit_user_registration_path %>
+          <%= menu_item (t :sign_out), destroy_user_session_path, method: :delete %>
+        <% end %>
+      <% else %>
+          <%= simple_form_for(:user, :url => session_path(:user), :html => {:class => 'navbar-form pull-right'}) do |f| %>
+              <%= f.input :email, as: :email, label: false, placeholder: 'Usuario' %>
+              <%= f.input :password, as: :password, label: false, placeholder: 'Contraseña' %>
+              <%= f.input :remember_me, as: :boolean, inline_label: '¿Recordarme?' %>
+              <%= f.button :submit %>
+              <%= link_to (t :sign_up), new_registration_path(:user) %>
+          <% end %>
+      <% end %>
+
+
+    <% end %>
+
+    <%= render_flash %>
+
+    <div class="container">
+      <%= yield %>
+      <br><br>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  postdb:
+    image: postgres:alpine
+    container_name: "postdb"
+    environment: 
+      POSTGRES_PASSWORD: "mysecretpassword"
+      OWNCLOUD_PASSWORD: "mysecretpassword"
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5435:5432"
+    networks:
+      - owncloud
+  owncloud:
+    container_name: "owncloud"
+    image: owncloud
+    ports:
+      - "81:80"
+    links:
+      - postdb
+    volumes:
+      - ./data:/var/www/html
+    networks:
+      - owncloud
+
+networks:
+  owncloud:
+    driver: bridge
