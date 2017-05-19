@@ -14,6 +14,7 @@ services:
       - elasticsearch
       - logstash
       - kibana
+      - plex
     networks:
       - local
 
@@ -45,7 +46,7 @@ services:
       RAILS_PASSWORD: "mysecretpassword"
     volumes:
       - ./scripts:/docker-entrypoint-initdb.d
-      - /home/teohoch/postgres-data:/var/lib/postgresql/data
+      - ~/postgres-data:/var/lib/postgresql/data
     networks:
       - owncloud
       - rails
@@ -56,7 +57,7 @@ services:
     links:
       - postdb
     volumes:
-      - /home/teohoch/owncloud-data:/var/www/html
+      - ~/owncloud:/var/www/html
     networks:
       - owncloud
       - local
@@ -131,6 +132,33 @@ services:
       - elasticsearch
     networks:
       - elknet
+      - local
+
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker
+    restart: always
+    ports:
+      - 32400:32400/tcp
+      - 3005:3005/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    environment:
+      - TZ=Chile/Continental
+      - PLEX_CLAIM=claim-JsUkCCvkrUNJip7EaSxy
+      - ADVERTISE_IP=http://192.168.1.1:32400/
+      - CHANGE_CONFIG_DIR_OWNERSHIP:false
+    hostname: plex.hochfarber.com
+    volumes:
+      - ~/plex/config:/config
+      - ~/plex/transcode:/transcode
+      - ~/media:/data
+    networks:
       - local
 
 volumes:
