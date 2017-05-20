@@ -150,7 +150,7 @@ services:
       - 32414:32414/udp
     environment:
       - TZ=Chile/Continental
-      - PLEX_CLAIM=claim-JsUkCCvkrUNJip7EaSxy
+      - PLEX_CLAIM=claim-8GkaUHdqwyaYxBzk2QqD
       - ADVERTISE_IP=http://192.168.1.1:32400/
       - CHANGE_CONFIG_DIR_OWNERSHIP:false
     hostname: plex.hochfarber.com
