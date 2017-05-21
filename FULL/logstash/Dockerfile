@@ -46,7 +46,7 @@ USER logstash
 
 ADD env2yaml/env2yaml /usr/local/bin/
 
-EXPOSE 9600 5044
+EXPOSE 9600 5044 5000
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
 CMD ["-f", "/usr/share/logstash/pipeline/"]
