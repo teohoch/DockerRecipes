@@ -4,7 +4,7 @@ services:
   proxy:
     build: nginx/
     container_name: "portainer-proxy"
-    restart: always
+    restart: unless-stopped
     ports:
       - "80:80"
     depends_on:
@@ -21,14 +21,14 @@ services:
   templates:
     image: portainer/templates
     container_name: "portainer-templates"
-    restart: always
+    restart: unless-stopped
     networks:
       - local
 
   portainer:
     image: portainer/portainer
     container_name: "portainer-app"
-    restart: always
+    restart: unless-stopped
     command: --templates http://templates/templates.json
     networks:
       - local
@@ -39,7 +39,7 @@ services:
   postdb:
     image: postgres:alpine
     container_name: "postdb"
-    restart: always
+    restart: unless-stopped
     environment: 
       POSTGRES_PASSWORD: "mysecretpassword"
       OWNCLOUD_PASSWORD: "mysecretpassword"
@@ -53,7 +53,7 @@ services:
   owncloud:
     container_name: "owncloud"
     image: owncloud
-    restart: always
+    restart: unless-stopped
     links:
       - postdb
     volumes:
@@ -65,7 +65,7 @@ services:
   rails:
     build: rails/
     container_name: "rails"
-    restart: always
+    restart: unless-stopped
     depends_on:
       - postdb
     links:
@@ -83,7 +83,7 @@ services:
         ELASTIC_VERSION: 5.3.2
         ES_DOWNLOAD_URL: https://artifacts.elastic.co/downloads/elasticsearch
     container_name: elasticsearch
-    restart: always
+    restart: unless-stopped
     environment:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
@@ -110,7 +110,7 @@ services:
         ELASTIC_VERSION: 5.3.2
         LOGSTASH_DOWNLOAD_URL: https://artifacts.elastic.co/downloads/logstash/logstash-5.3.2.tar.gz
     container_name: logstash
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./logstash/config:/usr/share/logstash/config/
       - ./logstash/pipeline:/usr/share/logstash/pipeline/
@@ -131,7 +131,7 @@ services:
         KIBANA_VERSION: 5.3.2
         KIBANA_DOWNLOAD_URL: https://artifacts.elastic.co/downloads/kibana
     container_name: kibana
-    restart: always
+    restart: unless-stopped
     depends_on:
       - elasticsearch
     networks:
@@ -141,7 +141,7 @@ services:
   plex:
     container_name: plex
     image: plexinc/pms-docker
-    restart: always
+    restart: unless-stopped
     ports:
       - 32400:32400/tcp
       - 3005:3005/tcp
@@ -154,7 +154,7 @@ services:
       - 32414:32414/udp
     environment:
       - TZ=Chile/Continental
-      - PLEX_CLAIM=claim-8GkaUHdqwyaYxBzk2QqD
+      - PLEX_CLAIM=claim-XTGtzVRxxzqnDENZmT8J
       - ADVERTISE_IP=http://192.168.1.1:32400/
       - CHANGE_CONFIG_DIR_OWNERSHIP:false
     hostname: plex.hochfarber.com

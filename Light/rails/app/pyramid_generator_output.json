@@ -1,0 +1,17 @@
+{
+    "status" : "bool",
+    "errors" : [],
+    "object" : {
+        "general_configuration" : {
+
+        },
+        "first_round"   :   [[]],
+        "rounds"        : {
+            "[round_number]"   : {
+                "number_of_matches" : 999,
+                "matches_configuration"      : [999,999,999  ]
+            }
+        }
+
+    }
+}

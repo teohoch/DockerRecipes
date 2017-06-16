@@ -1,0 +1,21 @@
+<h2><%= t :sign_in %></h2>
+
+<h3><%= t :input_your_data %></h3>
+
+<%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+
+    <div class="form-inputs">
+      <%= f.input :email %>
+      <%= f.input :password, as: :password, input_html: {autocomplete: 'off'} %>
+      <% if devise_mapping.rememberable? -%>
+          <%= f.input :remember_me, as: :boolean, inline_label: '¿Recordarme?' %>
+      <% end -%>
+    </div>
+    <div class="form-actions">
+      <%= f.button :submit %>
+    </div>
+<% end %>
+
+<br>
+
+<%= render 'devise/shared/links' %>

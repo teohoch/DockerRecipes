@@ -1,0 +1,76 @@
+<table class="display table table-condensed table-responsive">
+  <thead>
+  <tr>
+    <th><h3>Datos de la Partida</h3></th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @match.attributes.each do |attribute_name, attribute_value| %>
+      <% unless %w(id created_at updated_at round pyramidal_position).include? attribute_name %>
+          <tr>
+            <% if attribute_name == 'tournament_id' %>
+                <% if attribute_value != nil %>
+                    <td><%= Match.human_attribute_name(:tournament) %></td>
+                    <td><%= attribute_value %></td>
+                <% end %>
+            <% elsif attribute_name == 'validated' %>
+                <td><%= Match.human_attribute_name(:validated) %></td>
+                <td><%= @match.validated_human %></td>
+            <% else %>
+                <td> <%= Match.human_attribute_name(attribute_name) %> </td>
+                <td> <%= attribute_value %> </td>
+            <% end %>
+          </tr>
+      <% end %>
+  <% end %>
+  </tbody>
+</table>
+<h3>Jugadores</h3>
+<table class="display table table-condensed table-responsive">
+  <thead>
+  <tr>
+    <th><%= User.human_attribute_name(:name) %> </th>
+    <th><%= UserMatch.human_attribute_name(:victory_position) %></th>
+    <th class="center_element"><%= UserMatch.human_attribute_name(:vp) %></th>
+    <th class="center_element"><%= User.human_attribute_name(:position_general) %></th>
+    <th class="center_element"><%= User.human_attribute_name(:position_tournament) %></th>
+    <th class="center_element"><%= User.human_attribute_name(:position_free) %></th>
+    <th class="center_element"><%= User.human_attribute_name(:matches_played) %></th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @users.each do |user| %>
+      <tr>
+        <td><%= user.name %></td>
+        <td><%= victory_position_human(user.victory_position) %></td>
+        <td align="center"><%= user.vp %></td>
+        <td align="center"><%= user.position_general %></td>
+        <td align="center"><%= user.position_tournament %></td>
+        <td align="center"><%= user.position_free %></td>
+        <td align="center"><%= user.matches_played %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+
+
+
+<div class="row">
+  <% if can? :update, @match %>
+      <div class="col-md-1">
+        <%= link_to (t 'edit'), edit_match_path(@match), class: 'btn btn-info' %>
+      </div>
+  <% end %>
+  <% if can? :validate, @match %>
+      <div class="col-md-2 center-block">
+        <%= simple_form_for @match, url: validate_match_path(@match), method: :patch do |f| %>
+            <%= f.button :submit_tag, (t 'validate'), :class => 'btn btn-success' %>
+        <% end %>
+      </div>
+  <% end %>
+  <div class="col-md-1">
+    <%= link_to (t 'back'), back_or_default(matches_path), class: 'btn btn-danger' %>
+  </div>
+
+
+</div>

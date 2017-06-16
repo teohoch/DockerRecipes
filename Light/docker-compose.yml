@@ -1,0 +1,113 @@
+version: '2'
+
+services:
+  proxy:
+    build: nginx/
+    container_name: "portainer-proxy-light"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - portainer
+      - owncloud
+      - rails      
+      - plex
+    networks:
+      - local
+
+  templates:
+    image: portainer/templates
+    container_name: "portainer-templates-light"
+    restart: unless-stopped
+    networks:
+      - local
+
+  portainer:
+    image: portainer/portainer
+    container_name: "portainer-app-light"
+    restart: unless-stopped
+    command: --templates http://templates/templates.json
+    networks:
+      - local
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/portainer/data:/data
+
+  postdb:
+    image: postgres:alpine
+    container_name: "postdb-light"
+    restart: unless-stopped
+    environment: 
+      POSTGRES_PASSWORD: "mysecretpassword"
+      OWNCLOUD_PASSWORD: "mysecretpassword"
+      RAILS_PASSWORD: "mysecretpassword"
+    ports:
+      - 5435:5432
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+      - ~/postgres-data:/var/lib/postgresql/data
+    networks:
+      - owncloud
+      - rails
+  owncloud:
+    container_name: "owncloud-light"
+    image: owncloud
+    restart: unless-stopped
+    links:
+      - postdb
+    volumes:
+      - ~/owncloud:/var/www/html
+    networks:
+      - owncloud
+      - local
+
+  rails:
+    build: rails/
+    container_name: "rails-light"
+    restart: unless-stopped
+    depends_on:
+      - postdb
+    links:
+      - postdb
+    environment:
+      CATAN_LEADERBOARDS_DATABASE_PASSWORD: "mysecretpassword"
+    networks:
+      - rails
+      - local
+
+  plex:
+    container_name: plex-light
+    image: plexinc/pms-docker
+    restart: unless-stopped
+    ports:
+      - 32400:32400/tcp
+      - 3005:3005/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    environment:
+      - TZ=Chile/Continental
+      - PLEX_CLAIM=claim-XTGtzVRxxzqnDENZmT8J
+      - ADVERTISE_IP=http://192.168.1.1:32400/
+      - CHANGE_CONFIG_DIR_OWNERSHIP:false
+    hostname: plex.hochfarber.com
+    volumes:
+      - ~/plex/config:/config
+      - ~/plex/transcode:/transcode
+      - ~/media:/data
+    networks:
+      - local
+
+
+networks:
+  local:
+    driver: bridge
+  rails:
+    driver: bridge
+  owncloud:
+    driver: bridge
+

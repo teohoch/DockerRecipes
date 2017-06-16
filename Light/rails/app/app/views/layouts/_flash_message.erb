@@ -1,0 +1,15 @@
+
+<div class="container alert <%= bootstrap_class_for(type) %> fade in">
+    <button class="close" data-dismiss="alert">×</button>
+  <% if type == 'error' && message.is_a?(Array) %>
+    <p><%= message[0] %></p>
+    <ul>
+        <% message[1].each do |p| %>
+        <li><%= p.second.first %></li>
+        <% end %>
+    </ul>
+    <% else %>
+    <p><%= message %></p>
+    <% end %>
+
+</div>

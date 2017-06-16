@@ -1,0 +1,614 @@
+  [1m[35m (94.5ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying PRIMARY KEY)[0m
+  [1m[35m (155.4ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_try_advisory_lock(2326001988332584695);[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Migrating to DeviseCreateUsers (20170123112714)
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (132.3ms)[0m  [1m[35mCREATE TABLE "users" ("id" serial primary key, "email" character varying DEFAULT '' NOT NULL, "encrypted_password" character varying DEFAULT '' NOT NULL, "reset_password_token" character varying, "reset_password_sent_at" timestamp, "remember_created_at" timestamp, "sign_in_count" integer DEFAULT 0 NOT NULL, "current_sign_in_at" timestamp, "last_sign_in_at" timestamp, "current_sign_in_ip" inet, "last_sign_in_ip" inet, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL, "name" character varying NOT NULL, "elo_general" integer DEFAULT 1500 NOT NULL, "elo_free" integer DEFAULT 1500 NOT NULL, "elo_tournament" integer DEFAULT 1500 NOT NULL, "position_general" integer DEFAULT -1 NOT NULL, "position_free" integer DEFAULT -1 NOT NULL, "position_tournament" integer DEFAULT -1 NOT NULL, "matches_played" integer DEFAULT 0 NOT NULL)[0m
+  [1m[35m (31.2ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_users_on_email" ON "users"  ("email")[0m
+  [1m[35m (31.4ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_users_on_reset_password_token" ON "users"  ("reset_password_token")[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20170123112714"]]
+  [1m[35m (17.3ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateTournaments (20170203165243)
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (113.7ms)[0m  [1m[35mCREATE TABLE "tournaments" ("id" serial primary key, "name" character varying NOT NULL, "number_players" integer NOT NULL, "prize" character varying NOT NULL, "entrance_fee" integer NOT NULL, "date" date NOT NULL, "status" integer DEFAULT 0 NOT NULL, "board_size" integer DEFAULT 4 NOT NULL, "mode" integer DEFAULT 0 NOT NULL, "rounds" integer, "current_round" integer DEFAULT 0, "must_end_round" boolean DEFAULT 't' NOT NULL, "registered" integer DEFAULT 0 NOT NULL, "officer_id" integer NOT NULL, "structure" json, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL, CONSTRAINT "fk_rails_40cc2911e4"
+FOREIGN KEY ("officer_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (43.1ms)[0m  [1m[35mCREATE  INDEX  "index_tournaments_on_officer_id" ON "tournaments"  ("officer_id")[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20170203165243"]]
+  [1m[35m (18.0ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateInscriptions (20170211225850)
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (46.6ms)[0m  [1m[35mCREATE TABLE "inscriptions" ("id" serial primary key, "user_id" integer, "tournament_id" integer, "present_position" integer, "present_round" integer, "score" integer, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL, CONSTRAINT "fk_rails_900975df55"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_a5548dcf34"
+FOREIGN KEY ("tournament_id")
+  REFERENCES "tournaments" ("id")
+)[0m
+  [1m[35m (39.1ms)[0m  [1m[35mCREATE  INDEX  "index_inscriptions_on_user_id" ON "inscriptions"  ("user_id")[0m
+  [1m[35m (30.9ms)[0m  [1m[35mCREATE  INDEX  "index_inscriptions_on_tournament_id" ON "inscriptions"  ("tournament_id")[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20170211225850"]]
+  [1m[35m (16.5ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateMatches (20170216000654)
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (89.9ms)[0m  [1m[35mCREATE TABLE "matches" ("id" serial primary key, "tournament_id" integer, "n_players" integer DEFAULT 0 NOT NULL, "expected_number_players" integer, "round" integer, "pyramidal_position" integer, "date" date, "location" character varying, "validated" boolean DEFAULT 'f' NOT NULL, "consumer_id" integer, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL, CONSTRAINT "fk_rails_700eaa2935"
+FOREIGN KEY ("tournament_id")
+  REFERENCES "tournaments" ("id")
+)[0m
+  [1m[35m (31.4ms)[0m  [1m[35mCREATE  INDEX  "index_matches_on_tournament_id" ON "matches"  ("tournament_id")[0m
+  [1m[35m (31.6ms)[0m  [1m[35mCREATE  INDEX  "index_matches_on_consumer_id" ON "matches"  ("consumer_id")[0m
+  [1m[35m (0.9ms)[0m  [1m[35mALTER TABLE "matches" ADD CONSTRAINT "fk_rails_7a43ee0339"
+FOREIGN KEY ("consumer_id")
+  REFERENCES "matches" ("id")
+[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20170216000654"]]
+  [1m[35m (20.3ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateUserMatches (20170216021751)
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (71.9ms)[0m  [1m[35mCREATE TABLE "user_matches" ("id" serial primary key, "user_id" integer NOT NULL, "match_id" integer NOT NULL, "vp" integer, "elo_general" integer, "elo_general_change" integer DEFAULT 0 NOT NULL, "elo_free" integer, "elo_free_change" integer DEFAULT 0 NOT NULL, "elo_tournament" integer, "elo_tournament_change" integer DEFAULT 0 NOT NULL, "tournament_point" integer, "victory_position" integer, "validated" boolean DEFAULT 'f' NOT NULL, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL, CONSTRAINT "fk_rails_3fbffa4fff"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_b1bbee38c6"
+FOREIGN KEY ("match_id")
+  REFERENCES "matches" ("id")
+)[0m
+  [1m[35m (41.1ms)[0m  [1m[35mCREATE  INDEX  "index_user_matches_on_user_id" ON "user_matches"  ("user_id")[0m
+  [1m[35m (40.0ms)[0m  [1m[35mCREATE  INDEX  "index_user_matches_on_match_id" ON "user_matches"  ("match_id")[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20170216021751"]]
+  [1m[35m (20.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", :environment], ["LIMIT", 1]]
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"[0m  [["key", "environment"], ["value", "development"], ["created_at", 2017-05-02 07:18:15 UTC], ["updated_at", 2017-05-02 07:18:15 UTC]]
+  [1m[35m (5.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT pg_advisory_unlock(2326001988332584695)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.4ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "teohoch2@gmail.com"], ["LIMIT", 1]]
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "teohoch2@gmail.com"], ["encrypted_password", "$2a$11$NH.tA2RBetY1.1cqPRuRFOq9oqLEGg8kPMzPvaRoaZ4dgiE7JhFi."], ["created_at", 2017-05-02 07:18:16 UTC], ["updated_at", 2017-05-02 07:18:16 UTC], ["name", "Teodoro Hochfärber"]]
+  [1m[35m (43.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.3ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "teodoro.hochfarber@gmail.com"], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "teodoro.hochfarber@gmail.com"], ["encrypted_password", "$2a$11$e2RkhNVp0CQC.CADYdgQh.VPBeVPtgd23r4ll7Jp.GussD/7Bj/jS"], ["created_at", 2017-05-02 07:18:16 UTC], ["updated_at", 2017-05-02 07:18:16 UTC], ["name", "Teo2"]]
+  [1m[35m (15.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.4ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "ariadna_o_nez_monta_god@nitzschekertzmann.co"], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "ariadna_o_nez_monta_god@nitzschekertzmann.co"], ["encrypted_password", "$2a$11$zmlC8Cjv0dHTr2vB0OLCsu7xcU8hP6dRTC7NqtkHfYrN8Vc9ZCmOe"], ["created_at", 2017-05-02 07:18:16 UTC], ["updated_at", 2017-05-02 07:18:16 UTC], ["name", "Ariadna Godínez Montaño"]]
+  [1m[35m (4.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.3ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "sta.caldera.riz.guadalupe.armend@hartmanndouglas.net"], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "sta.caldera.riz.guadalupe.armend@hartmanndouglas.net"], ["encrypted_password", "$2a$11$o1IOPx3Sv5uf27JCWlsPLeDDyksvoWQUcA2gwwWJ73nR7EvEQSUx2"], ["created_at", 2017-05-02 07:18:16 UTC], ["updated_at", 2017-05-02 07:18:16 UTC], ["name", "Sta. Guadalupe Armendáriz Caldera"]]
+  [1m[35m (6.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.3ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "molina_arturo_armend_riz@ankunding.biz"], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "molina_arturo_armend_riz@ankunding.biz"], ["encrypted_password", "$2a$11$gmug8B3lI45WpQ8yO/L4HephCAAXYCpArS5PbJy53YvGOal1vHwz2"], ["created_at", 2017-05-02 07:18:16 UTC], ["updated_at", 2017-05-02 07:18:16 UTC], ["name", "Arturo Molina Armendáriz"]]
+  [1m[35m (6.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.3ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "bustamante_monta_miguel_ez@gleichner.io"], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "bustamante_monta_miguel_ez@gleichner.io"], ["encrypted_password", "$2a$11$dQdnEo0iqPRdKJl4Cy/HpOVHRV..4jt69Jc3er.9dKQMzuprTArPq"], ["created_at", 2017-05-02 07:18:16 UTC], ["updated_at", 2017-05-02 07:18:16 UTC], ["name", "Miguel Bustamante Montañez"]]
+  [1m[35m (18.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.2ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "rivero.nica.m.sosa@koeppmcglynn.net"], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "rivero.nica.m.sosa@koeppmcglynn.net"], ["encrypted_password", "$2a$11$T7sEApRfIuXjKgKXA4lj5uOv1lPmY1LcPZjMluaz8vzrMV0A/LMLm"], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC], ["name", "Mónica Rivero Sosa"]]
+  [1m[35m (1.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.3ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "carmen.a.rivera.rasc.del.mar.n@ondricka.biz"], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "carmen.a.rivera.rasc.del.mar.n@ondricka.biz"], ["encrypted_password", "$2a$11$5g5kd7FUhhBKIGTWQ9qTceCRtlYV8DyqJg71lkvD95paXqlzAG9Iu"], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC], ["name", "María del Carmen Rascón Rivera"]]
+  [1m[35m (2.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.3ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "leonor_esquivel_rodarte@paucek.info"], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "leonor_esquivel_rodarte@paucek.info"], ["encrypted_password", "$2a$11$L9pIf1Wk18wLczqESv10mubxx/iJF3mU5It5Nt7Go1r3svZvYIXYS"], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC], ["name", "Leonor Esquivel Rodarte"]]
+  [1m[35m (2.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.3ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "luz.salinas.n.rinc@torp.org"], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "luz.salinas.n.rinc@torp.org"], ["encrypted_password", "$2a$11$6hOlewkVbZxTJx/Gsj7BVub/H9KW5LmoyVArhV1LPyKCwZ3aC/DTK"], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC], ["name", "Luz Salinas Rincón"]]
+  [1m[35m (1.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.3ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "gabriela.arce.zamora@ritchie.co"], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "gabriela.arce.zamora@ritchie.co"], ["encrypted_password", "$2a$11$p1Iht0MGaBjM7URMpQDxNuyeC0dha7YHGVc8Wqxrf4ZURQHExsAD2"], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC], ["name", "Gabriela Arce Zamora"]]
+  [1m[35m (2.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists (0.3ms)[0m  [1m[34mSELECT  1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "alejandra_as_sra_rubio_mat@lang.biz"], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "created_at", "updated_at", "name") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "alejandra_as_sra_rubio_mat@lang.biz"], ["encrypted_password", "$2a$11$WpUJZqdEA6x7UmOOyxrl4OVGTJK.q0Sv05qNBAJGdByYqa0GeEvES"], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC], ["name", "Sra. Alejandra Matías Rubio"]]
+  [1m[35m (1.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.6ms)[0m  [1m[32mINSERT INTO "tournaments" ("name", "number_players", "prize", "entrance_fee", "date", "mode", "rounds", "officer_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["name", "Jakku Annual Tournament"], ["number_players", 8], ["prize", "Republic Cruiser"], ["entrance_fee", 5402], ["date", Tue, 02 May 2017], ["mode", 1], ["rounds", 0], ["officer_id", 1], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[35m (5.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.7ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 8], ["tournament_id", 1], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 1]]
+  [1m[35m (7.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 7], ["tournament_id", 1], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 1]]
+  [1m[35m (3.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 6], ["tournament_id", 1], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 1]]
+  [1m[35m (2.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 5], ["tournament_id", 1], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 1]]
+  [1m[35m (2.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 4], ["tournament_id", 1], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 1]]
+  [1m[35m (2.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 3], ["tournament_id", 1], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 1]]
+  [1m[35m (2.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 2], ["tournament_id", 1], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 1]]
+  [1m[35m (3.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 1], ["tournament_id", 1], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 1]]
+  [1m[35m (3.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "tournaments" ("name", "number_players", "prize", "entrance_fee", "date", "mode", "rounds", "officer_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["name", "Jakku Annual Tournament"], ["number_players", 9], ["prize", "TIE Bomber"], ["entrance_fee", 6966], ["date", Tue, 02 May 2017], ["mode", 1], ["rounds", 0], ["officer_id", 1], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[35m (3.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 9], ["tournament_id", 2], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 2]]
+  [1m[35m (3.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 8], ["tournament_id", 2], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 2]]
+  [1m[35m (3.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 7], ["tournament_id", 2], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.3ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 2]]
+  [1m[35m (3.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 6], ["tournament_id", 2], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 2]]
+  [1m[35m (3.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 5], ["tournament_id", 2], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 2]]
+  [1m[35m (3.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 4], ["tournament_id", 2], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 2]]
+  [1m[35m (2.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 3], ["tournament_id", 2], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 2]]
+  [1m[35m (9.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 2], ["tournament_id", 2], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 2]]
+  [1m[35m (2.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 1], ["tournament_id", 2], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 2]]
+  [1m[35m (7.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "tournaments" ("name", "number_players", "prize", "entrance_fee", "date", "mode", "rounds", "officer_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["name", "Yavin Annual Tournament"], ["number_players", 9], ["prize", "Republic Cruiser"], ["entrance_fee", 3351], ["date", Tue, 02 May 2017], ["mode", -1], ["rounds", 0], ["officer_id", 1], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[35m (3.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 9], ["tournament_id", 3], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 3]]
+  [1m[35m (3.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 8], ["tournament_id", 3], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:17 UTC], ["updated_at", 2017-05-02 07:18:17 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 3]]
+  [1m[35m (3.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 7], ["tournament_id", 3], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:18 UTC], ["updated_at", 2017-05-02 07:18:18 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 3]]
+  [1m[35m (3.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 6], ["tournament_id", 3], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:18 UTC], ["updated_at", 2017-05-02 07:18:18 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 3]]
+  [1m[35m (2.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 5], ["tournament_id", 3], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:18 UTC], ["updated_at", 2017-05-02 07:18:18 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 3]]
+  [1m[35m (1.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 4], ["tournament_id", 3], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:18 UTC], ["updated_at", 2017-05-02 07:18:18 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 3]]
+  [1m[35m (3.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 3], ["tournament_id", 3], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:18 UTC], ["updated_at", 2017-05-02 07:18:18 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 3]]
+  [1m[35m (3.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 2], ["tournament_id", 3], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:18 UTC], ["updated_at", 2017-05-02 07:18:18 UTC]]
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 3]]
+  [1m[35m (2.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "inscriptions" ("user_id", "tournament_id", "present_position", "present_round", "score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 1], ["tournament_id", 3], ["present_position", 0], ["present_round", 0], ["score", 0], ["created_at", 2017-05-02 07:18:18 UTC], ["updated_at", 2017-05-02 07:18:18 UTC]]
+  [1m[36mTournament Load (0.1ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "tournaments" SET "registered" = COALESCE("registered", 0) + 1 WHERE "tournaments"."id" = $1[0m  [["id", 3]]
+  [1m[35m (3.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1[0m  [["key", :environment]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1[0m  [["key", :environment]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1[0m  [["key", :environment]]
+  [1m[35m (516.5ms)[0m  [1m[35mDROP DATABASE IF EXISTS "Catan_leaderboards_test"[0m
+  [1m[35m (731.9ms)[0m  [1m[35mCREATE DATABASE "Catan_leaderboards_test" ENCODING = 'unicode'[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "plpgsql"[0m
+  [1m[35m (70.1ms)[0m  [1m[35mCREATE TABLE "inscriptions" ("id" serial primary key, "user_id" integer, "tournament_id" integer, "present_position" integer, "present_round" integer, "score" integer, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (63.4ms)[0m  [1m[35mCREATE  INDEX  "index_inscriptions_on_tournament_id" ON "inscriptions" USING btree ("tournament_id")[0m
+  [1m[35m (63.5ms)[0m  [1m[35mCREATE  INDEX  "index_inscriptions_on_user_id" ON "inscriptions" USING btree ("user_id")[0m
+  [1m[35m (106.4ms)[0m  [1m[35mCREATE TABLE "matches" ("id" serial primary key, "tournament_id" integer, "n_players" integer DEFAULT 0 NOT NULL, "expected_number_players" integer, "round" integer, "pyramidal_position" integer, "date" date, "location" character varying, "validated" boolean DEFAULT 'f' NOT NULL, "consumer_id" integer, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (63.7ms)[0m  [1m[35mCREATE  INDEX  "index_matches_on_consumer_id" ON "matches" USING btree ("consumer_id")[0m
+  [1m[35m (55.6ms)[0m  [1m[35mCREATE  INDEX  "index_matches_on_tournament_id" ON "matches" USING btree ("tournament_id")[0m
+  [1m[35m (95.7ms)[0m  [1m[35mCREATE TABLE "tournaments" ("id" serial primary key, "name" character varying NOT NULL, "number_players" integer NOT NULL, "prize" character varying NOT NULL, "entrance_fee" integer NOT NULL, "date" date NOT NULL, "status" integer DEFAULT 0 NOT NULL, "board_size" integer DEFAULT 4 NOT NULL, "mode" integer DEFAULT 0 NOT NULL, "rounds" integer, "current_round" integer DEFAULT 0, "must_end_round" boolean DEFAULT 't' NOT NULL, "registered" integer DEFAULT 0 NOT NULL, "officer_id" integer NOT NULL, "structure" json, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (55.7ms)[0m  [1m[35mCREATE  INDEX  "index_tournaments_on_officer_id" ON "tournaments" USING btree ("officer_id")[0m
+  [1m[35m (88.1ms)[0m  [1m[35mCREATE TABLE "user_matches" ("id" serial primary key, "user_id" integer NOT NULL, "match_id" integer NOT NULL, "vp" integer, "elo_general" integer, "elo_general_change" integer DEFAULT 0 NOT NULL, "elo_free" integer, "elo_free_change" integer DEFAULT 0 NOT NULL, "elo_tournament" integer, "elo_tournament_change" integer DEFAULT 0 NOT NULL, "tournament_point" integer, "victory_position" integer, "validated" boolean DEFAULT 'f' NOT NULL, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (72.9ms)[0m  [1m[35mCREATE  INDEX  "index_user_matches_on_match_id" ON "user_matches" USING btree ("match_id")[0m
+  [1m[35m (72.3ms)[0m  [1m[35mCREATE  INDEX  "index_user_matches_on_user_id" ON "user_matches" USING btree ("user_id")[0m
+  [1m[35m (102.3ms)[0m  [1m[35mCREATE TABLE "users" ("id" serial primary key, "email" character varying DEFAULT '' NOT NULL, "encrypted_password" character varying DEFAULT '' NOT NULL, "reset_password_token" character varying, "reset_password_sent_at" timestamp, "remember_created_at" timestamp, "sign_in_count" integer DEFAULT 0 NOT NULL, "current_sign_in_at" timestamp, "last_sign_in_at" timestamp, "current_sign_in_ip" inet, "last_sign_in_ip" inet, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL, "name" character varying NOT NULL, "elo_general" integer DEFAULT 1500 NOT NULL, "elo_free" integer DEFAULT 1500 NOT NULL, "elo_tournament" integer DEFAULT 1500 NOT NULL, "position_general" integer DEFAULT -1 NOT NULL, "position_free" integer DEFAULT -1 NOT NULL, "position_tournament" integer DEFAULT -1 NOT NULL, "matches_played" integer DEFAULT 0 NOT NULL)[0m
+  [1m[35m (55.7ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_users_on_email" ON "users" USING btree ("email")[0m
+  [1m[35m (56.1ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_users_on_reset_password_token" ON "users" USING btree ("reset_password_token")[0m
+  [1m[35m (7.7ms)[0m  [1m[35mALTER TABLE "inscriptions" ADD CONSTRAINT "fk_rails_a5548dcf34"
+FOREIGN KEY ("tournament_id")
+  REFERENCES "tournaments" ("id")
+[0m
+  [1m[35m (7.9ms)[0m  [1m[35mALTER TABLE "inscriptions" ADD CONSTRAINT "fk_rails_900975df55"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+[0m
+  [1m[35m (7.9ms)[0m  [1m[35mALTER TABLE "matches" ADD CONSTRAINT "fk_rails_7a43ee0339"
+FOREIGN KEY ("consumer_id")
+  REFERENCES "matches" ("id")
+[0m
+  [1m[35m (8.0ms)[0m  [1m[35mALTER TABLE "matches" ADD CONSTRAINT "fk_rails_700eaa2935"
+FOREIGN KEY ("tournament_id")
+  REFERENCES "tournaments" ("id")
+[0m
+  [1m[35m (8.0ms)[0m  [1m[35mALTER TABLE "tournaments" ADD CONSTRAINT "fk_rails_40cc2911e4"
+FOREIGN KEY ("officer_id")
+  REFERENCES "users" ("id")
+[0m
+  [1m[35m (7.8ms)[0m  [1m[35mALTER TABLE "user_matches" ADD CONSTRAINT "fk_rails_b1bbee38c6"
+FOREIGN KEY ("match_id")
+  REFERENCES "matches" ("id")
+[0m
+  [1m[35m (7.8ms)[0m  [1m[35mALTER TABLE "user_matches" ADD CONSTRAINT "fk_rails_3fbffa4fff"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+[0m
+  [1m[35m (115.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying PRIMARY KEY)[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT version FROM "schema_migrations"[0m
+  [1m[35m (7.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20170216021751)[0m
+  [1m[35m (7.8ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20170211225850),
+(20170216000654),
+(20170123112714),
+(20170203165243);
+
+[0m
+  [1m[35m (106.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", :environment], ["LIMIT", 1]]
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"[0m  [["key", "environment"], ["value", "development"], ["created_at", 2017-05-02 07:18:20 UTC], ["updated_at", 2017-05-02 07:18:20 UTC]]
+  [1m[35m (3.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", :environment], ["LIMIT", 1]]
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCOMMIT[0m
+Started GET "/" for 127.0.0.1 at 2017-05-02 04:24:51 -0300
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by HomeController#index as HTML
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mUser Load (0.7ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE ("users"."position_general" != $1) ORDER BY "users"."position_general" ASC[0m  [["position_general", -1]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE ("users"."position_tournament" != $1) ORDER BY "users"."position_tournament" ASC[0m  [["position_tournament", -1]]
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE ("users"."position_free" != $1) ORDER BY "users"."position_free" ASC[0m  [["position_free", -1]]
+  Rendered home/index.html.erb within layouts/application (7.1ms)
+Completed 200 OK in 1875ms (Views: 1851.6ms | ActiveRecord: 2.9ms)
+
+
+Started POST "/users/sign_in" for 127.0.0.1 at 2017-05-02 04:24:56 -0300
+Processing by Devise::SessionsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"SN/2fbG1M8meEPcoNAfwpH951UxrcnTFybOH8HqD3Ol6jSYZFD9XyeocwuAx4oKAqPbBGzQzZkXA6albfnnjJg==", "user"=>{"email"=>"teohoch2@gmail.com", "password"=>"[FILTERED]", "remember_me"=>"0"}, "commit"=>"Iniciar Sesión"}
+  [1m[36mUser Load (0.8ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "teohoch2@gmail.com"], ["LIMIT", 1]]
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[33mUPDATE "users" SET "current_sign_in_at" = $1, "last_sign_in_at" = $2, "current_sign_in_ip" = $3, "last_sign_in_ip" = $4, "sign_in_count" = $5, "updated_at" = $6 WHERE "users"."id" = $7[0m  [["current_sign_in_at", 2017-05-02 07:24:56 UTC], ["last_sign_in_at", 2017-05-02 07:24:56 UTC], ["current_sign_in_ip", "127.0.0.1/32"], ["last_sign_in_ip", "127.0.0.1/32"], ["sign_in_count", 1], ["updated_at", 2017-05-02 07:24:56 UTC], ["id", 1]]
+  [1m[35m (14.8ms)[0m  [1m[35mCOMMIT[0m
+Redirected to http://0.0.0.0:3000/
+Completed 302 Found in 180ms (ActiveRecord: 18.4ms)
+
+
+Started GET "/" for 127.0.0.1 at 2017-05-02 04:24:57 -0300
+Processing by HomeController#index as HTML
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mUser Load (0.8ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE ("users"."position_general" != $1) ORDER BY "users"."position_general" ASC[0m  [["position_general", -1]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE ("users"."position_tournament" != $1) ORDER BY "users"."position_tournament" ASC[0m  [["position_tournament", -1]]
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE ("users"."position_free" != $1) ORDER BY "users"."position_free" ASC[0m  [["position_free", -1]]
+  Rendered home/index.html.erb within layouts/application (13.4ms)
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendered layouts/_flash_message.erb (0.5ms)
+Completed 200 OK in 346ms (Views: 342.5ms | ActiveRecord: 2.0ms)
+
+
+Started GET "/matches" for 127.0.0.1 at 2017-05-02 04:24:59 -0300
+Processing by MatchesController#index as HTML
+  [1m[36mUser Load (0.9ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendering matches/index.html.erb within layouts/application
+  [1m[36mMatch Load (0.7ms)[0m  [1m[34mSELECT "matches".* FROM "matches" INNER JOIN "user_matches" ON "matches"."id" = "user_matches"."match_id" WHERE "user_matches"."user_id" = $1[0m  [["user_id", 1]]
+  [1m[36mMatch Load (0.2ms)[0m  [1m[34mSELECT "matches".* FROM "matches"[0m
+  Rendered matches/index.html.erb within layouts/application (16.9ms)
+Completed 200 OK in 320ms (Views: 281.1ms | ActiveRecord: 7.6ms)
+
+
+Started GET "/tournaments" for 127.0.0.1 at 2017-05-02 04:25:00 -0300
+Processing by TournamentsController#index as HTML
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendering tournaments/index.html.erb within layouts/application
+  [1m[36mTournament Load (0.7ms)[0m  [1m[34mSELECT "tournaments".* FROM "tournaments"[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendered tournaments/index.html.erb within layouts/application (45.1ms)
+Completed 200 OK in 391ms (Views: 365.9ms | ActiveRecord: 5.1ms)
+
+
+Started GET "/tournaments/1" for 127.0.0.1 at 2017-05-02 04:25:02 -0300
+Processing by TournamentsController#show as HTML
+  Parameters: {"id"=>"1"}
+  [1m[36mTournament Load (0.4ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendering tournaments/show.html.erb within layouts/application
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mInscription Load (0.6ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 1], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 1], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 1], ["user_id", 1], ["LIMIT", 1]]
+  Rendered tournaments/show.html.erb within layouts/application (29.0ms)
+Completed 200 OK in 301ms (Views: 285.8ms | ActiveRecord: 4.9ms)
+
+
+Started POST "/tournaments/1/start" for 127.0.0.1 at 2017-05-02 04:25:04 -0300
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+Processing by TournamentsController#start as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"MgxNtZ+z04jo/HGbJc3tW3nr+IpWdmHQnJ4+N0um1nXkra3TcKYRtCu9J67iyGY65j78OONM6TOUmdcHCeiiUQ==", "commit"=>"Iniciar", "id"=>"1"}
+  [1m[36mTournament Load (0.5ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mUser Load (0.7ms)[0m  [1m[34mSELECT "users".* FROM "users" INNER JOIN "inscriptions" ON "users"."id" = "inscriptions"."user_id" WHERE "inscriptions"."tournament_id" = $1[0m  [["tournament_id", 1]]
+Redirected to http://0.0.0.0:3000/tournaments/1
+Completed 302 Found in 18ms (ActiveRecord: 1.4ms)
+
+
+Started GET "/tournaments/1" for 127.0.0.1 at 2017-05-02 04:25:04 -0300
+Processing by TournamentsController#show as HTML
+  Parameters: {"id"=>"1"}
+  [1m[36mTournament Load (0.4ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendering tournaments/show.html.erb within layouts/application
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mInscription Load (0.6ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 1], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 1], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 1], ["user_id", 1], ["LIMIT", 1]]
+  Rendered tournaments/show.html.erb within layouts/application (15.9ms)
+  Rendered layouts/_flash_message.erb (0.5ms)
+Completed 200 OK in 361ms (Views: 350.6ms | ActiveRecord: 1.8ms)
+
+
+Started GET "/tournaments" for 127.0.0.1 at 2017-05-02 04:25:11 -0300
+Processing by TournamentsController#index as HTML
+  [1m[36mUser Load (1.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendering tournaments/index.html.erb within layouts/application
+  [1m[36mTournament Load (0.4ms)[0m  [1m[34mSELECT "tournaments".* FROM "tournaments"[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendered tournaments/index.html.erb within layouts/application (15.7ms)
+Completed 200 OK in 352ms (Views: 340.4ms | ActiveRecord: 1.9ms)
+
+
+Started GET "/tournaments/2" for 127.0.0.1 at 2017-05-02 04:25:13 -0300
+Processing by TournamentsController#show as HTML
+  Parameters: {"id"=>"2"}
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  Rendering tournaments/show.html.erb within layouts/application
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mInscription Load (0.5ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 2], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 2], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.1ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 2], ["user_id", 1], ["LIMIT", 1]]
+  Rendered tournaments/show.html.erb within layouts/application (15.1ms)
+Completed 200 OK in 275ms (Views: 264.8ms | ActiveRecord: 1.4ms)
+
+
+Started POST "/tournaments/2/start" for 127.0.0.1 at 2017-05-02 04:25:15 -0300
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+Processing by TournamentsController#start as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"qT/ANmGNftJuIGJra1Ue4Vmp9Hel6JSbV2TsA2PuKdh/niBQjpi87q1hNF6sUJWAxnzwxRDSHHhfYwUzIaBd/A==", "commit"=>"Iniciar", "id"=>"2"}
+  [1m[36mTournament Load (0.2ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" INNER JOIN "inscriptions" ON "users"."id" = "inscriptions"."user_id" WHERE "inscriptions"."tournament_id" = $1[0m  [["tournament_id", 2]]
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "tournaments" SET "structure" = $1, "updated_at" = $2 WHERE "tournaments"."id" = $3[0m  [["structure", "{\"1\":{\"number_of_matches\":1,\"matches_configuration\":[3]},\"0\":{\"number_of_matches\":3,\"matches_configuration\":[3,3,3]}}"], ["updated_at", 2017-05-02 07:25:15 UTC], ["id", 2]]
+  [1m[35m (16.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTournament Load (0.3ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.8ms)[0m  [1m[32mINSERT INTO "matches" ("tournament_id", "expected_number_players", "round", "pyramidal_position", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["tournament_id", 2], ["expected_number_players", 3], ["round", 1], ["pyramidal_position", 0], ["created_at", 2017-05-02 07:25:15 UTC], ["updated_at", 2017-05-02 07:25:15 UTC]]
+  [1m[35m (3.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "matches" ("tournament_id", "expected_number_players", "round", "pyramidal_position", "consumer_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["tournament_id", 2], ["expected_number_players", 3], ["round", 0], ["pyramidal_position", 0], ["consumer_id", 1], ["created_at", 2017-05-02 07:25:15 UTC], ["updated_at", 2017-05-02 07:25:15 UTC]]
+  [1m[35m (4.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.8ms)[0m  [1m[32mINSERT INTO "user_matches" ("user_id", "match_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 2], ["match_id", 2], ["created_at", 2017-05-02 07:25:15 UTC], ["updated_at", 2017-05-02 07:25:15 UTC]]
+  [1m[36mMatch Load (0.2ms)[0m  [1m[34mSELECT  "matches".* FROM "matches" WHERE "matches"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "matches" SET "n_players" = COALESCE("n_players", 0) + 1 WHERE "matches"."id" = $1[0m  [["id", 2]]
+  [1m[35m (6.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "user_matches" ("user_id", "match_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 7], ["match_id", 2], ["created_at", 2017-05-02 07:25:15 UTC], ["updated_at", 2017-05-02 07:25:15 UTC]]
+  [1m[36mMatch Load (0.3ms)[0m  [1m[34mSELECT  "matches".* FROM "matches" WHERE "matches"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "matches" SET "n_players" = COALESCE("n_players", 0) + 1 WHERE "matches"."id" = $1[0m  [["id", 2]]
+  [1m[35m (3.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "user_matches" ("user_id", "match_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 9], ["match_id", 2], ["created_at", 2017-05-02 07:25:16 UTC], ["updated_at", 2017-05-02 07:25:16 UTC]]
+  [1m[36mMatch Load (0.2ms)[0m  [1m[34mSELECT  "matches".* FROM "matches" WHERE "matches"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "matches" SET "n_players" = COALESCE("n_players", 0) + 1 WHERE "matches"."id" = $1[0m  [["id", 2]]
+  [1m[35m (2.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "matches" ("tournament_id", "expected_number_players", "round", "pyramidal_position", "consumer_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["tournament_id", 2], ["expected_number_players", 3], ["round", 0], ["pyramidal_position", 1], ["consumer_id", 1], ["created_at", 2017-05-02 07:25:16 UTC], ["updated_at", 2017-05-02 07:25:16 UTC]]
+  [1m[35m (5.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "user_matches" ("user_id", "match_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 1], ["match_id", 3], ["created_at", 2017-05-02 07:25:16 UTC], ["updated_at", 2017-05-02 07:25:16 UTC]]
+  [1m[36mMatch Load (0.2ms)[0m  [1m[34mSELECT  "matches".* FROM "matches" WHERE "matches"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "matches" SET "n_players" = COALESCE("n_players", 0) + 1 WHERE "matches"."id" = $1[0m  [["id", 3]]
+  [1m[35m (1.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "user_matches" ("user_id", "match_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 3], ["match_id", 3], ["created_at", 2017-05-02 07:25:16 UTC], ["updated_at", 2017-05-02 07:25:16 UTC]]
+  [1m[36mMatch Load (0.2ms)[0m  [1m[34mSELECT  "matches".* FROM "matches" WHERE "matches"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "matches" SET "n_players" = COALESCE("n_players", 0) + 1 WHERE "matches"."id" = $1[0m  [["id", 3]]
+  [1m[35m (2.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "user_matches" ("user_id", "match_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 8], ["match_id", 3], ["created_at", 2017-05-02 07:25:16 UTC], ["updated_at", 2017-05-02 07:25:16 UTC]]
+  [1m[36mMatch Load (0.2ms)[0m  [1m[34mSELECT  "matches".* FROM "matches" WHERE "matches"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "matches" SET "n_players" = COALESCE("n_players", 0) + 1 WHERE "matches"."id" = $1[0m  [["id", 3]]
+  [1m[35m (2.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.5ms)[0m  [1m[32mINSERT INTO "matches" ("tournament_id", "expected_number_players", "round", "pyramidal_position", "consumer_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["tournament_id", 2], ["expected_number_players", 3], ["round", 0], ["pyramidal_position", 2], ["consumer_id", 1], ["created_at", 2017-05-02 07:25:16 UTC], ["updated_at", 2017-05-02 07:25:16 UTC]]
+  [1m[35m (2.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "user_matches" ("user_id", "match_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 4], ["match_id", 4], ["created_at", 2017-05-02 07:25:16 UTC], ["updated_at", 2017-05-02 07:25:16 UTC]]
+  [1m[36mMatch Load (0.1ms)[0m  [1m[34mSELECT  "matches".* FROM "matches" WHERE "matches"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "matches" SET "n_players" = COALESCE("n_players", 0) + 1 WHERE "matches"."id" = $1[0m  [["id", 4]]
+  [1m[35m (1.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "user_matches" ("user_id", "match_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 5], ["match_id", 4], ["created_at", 2017-05-02 07:25:16 UTC], ["updated_at", 2017-05-02 07:25:16 UTC]]
+  [1m[36mMatch Load (0.1ms)[0m  [1m[34mSELECT  "matches".* FROM "matches" WHERE "matches"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "matches" SET "n_players" = COALESCE("n_players", 0) + 1 WHERE "matches"."id" = $1[0m  [["id", 4]]
+  [1m[35m (2.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[32mINSERT INTO "user_matches" ("user_id", "match_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 6], ["match_id", 4], ["created_at", 2017-05-02 07:25:16 UTC], ["updated_at", 2017-05-02 07:25:16 UTC]]
+  [1m[36mMatch Load (0.1ms)[0m  [1m[34mSELECT  "matches".* FROM "matches" WHERE "matches"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[35mSQL (0.2ms)[0m  [1m[33mUPDATE "matches" SET "n_players" = COALESCE("n_players", 0) + 1 WHERE "matches"."id" = $1[0m  [["id", 4]]
+  [1m[35m (2.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[33mUPDATE "tournaments" SET "rounds" = $1, "status" = $2, "updated_at" = $3 WHERE "tournaments"."id" = $4[0m  [["rounds", 2], ["status", 1], ["updated_at", 2017-05-02 07:25:16 UTC], ["id", 2]]
+  [1m[35m (4.7ms)[0m  [1m[35mCOMMIT[0m
+Redirected to http://0.0.0.0:3000/tournaments/2
+Completed 302 Found in 180ms (ActiveRecord: 76.6ms)
+
+
+Started GET "/tournaments/2" for 127.0.0.1 at 2017-05-02 04:25:16 -0300
+Processing by TournamentsController#show as HTML
+  Parameters: {"id"=>"2"}
+  [1m[36mTournament Load (0.3ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  Rendering tournaments/show.html.erb within layouts/application
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mInscription Load (0.3ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 2], ["user_id", 1], ["LIMIT", 1]]
+  Rendered tournaments/show.html.erb within layouts/application (10.6ms)
+  Rendered layouts/_flash_message.erb (0.5ms)
+Completed 200 OK in 302ms (Views: 289.7ms | ActiveRecord: 1.2ms)
+
+
+Started GET "/tournaments" for 127.0.0.1 at 2017-05-02 04:25:22 -0300
+Processing by TournamentsController#index as HTML
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendering tournaments/index.html.erb within layouts/application
+  [1m[36mTournament Load (0.3ms)[0m  [1m[34mSELECT "tournaments".* FROM "tournaments"[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendered tournaments/index.html.erb within layouts/application (13.1ms)
+Completed 200 OK in 329ms (Views: 318.8ms | ActiveRecord: 0.9ms)
+
+
+Started GET "/tournaments/3" for 127.0.0.1 at 2017-05-02 04:25:24 -0300
+Processing by TournamentsController#show as HTML
+  Parameters: {"id"=>"3"}
+  [1m[36mTournament Load (0.4ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  Rendering tournaments/show.html.erb within layouts/application
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mInscription Load (0.6ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 3], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 3], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 3], ["user_id", 1], ["LIMIT", 1]]
+  Rendered tournaments/show.html.erb within layouts/application (15.4ms)
+Completed 200 OK in 324ms (Views: 307.7ms | ActiveRecord: 1.9ms)
+
+
+Started POST "/tournaments/3/start" for 127.0.0.1 at 2017-05-02 04:25:27 -0300
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+Processing by TournamentsController#start as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"+MVUsgVwe6gO/+KNE/2twGMNhFfaqIAOaMzQrvKgXxMuZLTU6mW5lM2+tLjU+Cah/NiA5W+SCO1gyzmesO4rNw==", "commit"=>"Iniciar", "id"=>"3"}
+  [1m[36mTournament Load (0.4ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT "users".* FROM "users" INNER JOIN "inscriptions" ON "users"."id" = "inscriptions"."user_id" WHERE "inscriptions"."tournament_id" = $1[0m  [["tournament_id", 3]]
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.6ms)[0m  [1m[33mUPDATE "tournaments" SET "status" = $1, "updated_at" = $2 WHERE "tournaments"."id" = $3[0m  [["status", 1], ["updated_at", 2017-05-02 07:25:27 UTC], ["id", 3]]
+  [1m[35m (14.7ms)[0m  [1m[35mCOMMIT[0m
+Redirected to http://0.0.0.0:3000/tournaments/3
+Completed 302 Found in 47ms (ActiveRecord: 16.4ms)
+
+
+Started GET "/tournaments/3" for 127.0.0.1 at 2017-05-02 04:25:27 -0300
+Processing by TournamentsController#show as HTML
+  Parameters: {"id"=>"3"}
+  [1m[36mTournament Load (0.4ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  Rendering tournaments/show.html.erb within layouts/application
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mInscription Load (0.3ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 3], ["user_id", 1], ["LIMIT", 1]]
+  Rendered tournaments/show.html.erb within layouts/application (16.3ms)
+  Rendered layouts/_flash_message.erb (0.5ms)
+Completed 200 OK in 329ms (Views: 313.6ms | ActiveRecord: 1.5ms)
+
+
+Started GET "/tournaments" for 127.0.0.1 at 2017-05-02 04:25:33 -0300
+Processing by TournamentsController#index as HTML
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendering tournaments/index.html.erb within layouts/application
+  [1m[36mTournament Load (0.4ms)[0m  [1m[34mSELECT "tournaments".* FROM "tournaments"[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  Rendered tournaments/index.html.erb within layouts/application (20.6ms)
+Completed 200 OK in 374ms (Views: 362.0ms | ActiveRecord: 1.2ms)
+
+
+Started GET "/tournaments/3" for 127.0.0.1 at 2017-05-02 04:25:37 -0300
+Processing by TournamentsController#show as HTML
+  Parameters: {"id"=>"3"}
+  [1m[36mTournament Load (0.4ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mCACHE (0.0ms)[0m  [1m[34mSELECT  "tournaments".* FROM "tournaments" WHERE "tournaments"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  Rendering tournaments/show.html.erb within layouts/application
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mInscription Load (0.3ms)[0m  [1m[34mSELECT  "inscriptions".* FROM "inscriptions" WHERE "inscriptions"."tournament_id" = $1 AND "inscriptions"."user_id" = $2 LIMIT $3[0m  [["tournament_id", 3], ["user_id", 1], ["LIMIT", 1]]
+  Rendered tournaments/show.html.erb within layouts/application (8.6ms)
+Completed 200 OK in 282ms (Views: 268.4ms | ActiveRecord: 1.4ms)
+
+

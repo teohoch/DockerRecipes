@@ -1,0 +1,28 @@
+
+<%= @tournament.pretty_show %>
+
+<%= @tournament.show_info %>
+
+<div class="row">
+  <% if can? :update, @tournament.raw_model %>
+      <div class="col-md-1">
+        <%= link_to (t 'edit'), edit_tournament_path(@tournament.raw_model), class: 'btn btn-info' %>
+      </div>
+  <% end %>
+  <% if can? :start, @tournament.raw_model %>
+      <div class="col-md-1">
+        <%= simple_form_for @tournament.raw_model, :url => start_tournament_path(@tournament.raw_model), :method => :post do |f| %>
+            <%= f.button :submit_tag, (t 'start'), :class => 'btn btn-info' %>
+        <% end %>
+      </div>
+  <% end %>
+
+  <%= @tournament.inscription_button(current_user) %>
+
+
+  <div class="col-md-1">
+    <%= link_to (t 'back'), tournaments_path, class: 'btn btn-danger' %>
+  </div>
+
+
+</div>

@@ -1,0 +1,40 @@
+<h1>Editing Match</h1>
+
+<%= simple_form_for @match, validate: true do |f| %>
+    <%= f.error_notification %>
+    <%= content_tag :div, :class => 'form-inputs', :id => 'inputs', data:
+        {not_tournament: @match.tournament_id.nil?,
+         current_users: @match.user_matches.count,
+         max_users: User.all.count,
+         error_message: (t 'activerecord.errors.models.match.attributes.n_players.inclusion')} do %>
+
+        <%= f.input :date, as: :string, validate: {presence: true}, input_html: {class: 'datepicker', readonly: 'readonly', data: {minDate: Date.current}} %>
+        <%= f.input :location, validate: {presence: true}, allow_blank: false %>
+
+        <%= f.simple_fields_for :user_matches do |m| %>
+            <div class="row">
+              <div class="col-md-3">
+                <%= m.association :user, :disabled => true %>
+              </div>
+              <div class="col-md-2">
+                <%= m.input :vp, as: :integer, validate: {presence: true}, input_html: {min: 1, step: 1, max: 10} %>
+                <%= m.input :id, as: :hidden %>
+              </div>
+            </div>
+        <% end %>
+
+
+        <%= link_to_add_fields 'Agregar Jugador', f, :user_matches, true, 'add_purchase_item' %>
+    <% end %>
+    <br>
+
+    <div class="form-actions">
+      <%= f.button :submit, id: 'submit_button' %>
+      <%= link_to (t 'back'), matches_path, class: 'btn btn-danger' %>
+    </div>
+<% end %>
+
+
+
+
+

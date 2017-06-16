@@ -1,0 +1,16 @@
+<table class="<%= table_class %>">
+  <thead>
+  <tr>
+    <th><h3> <%= title %> </h3></th>
+  </tr>
+
+  </thead>
+  <tbody>
+  <% object.each do |attribute_name, attribute_value| %>
+      <tr>
+        <td> <%= Tournament.human_attribute_name(attribute_name) %> </td>
+        <td> <%= attribute_value %> </td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
