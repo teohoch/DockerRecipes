@@ -50,13 +50,17 @@ services:
       - owncloud
       - rails
   owncloud:
-    container_name: "owncloud-light"
-    image: owncloud
-    restart: unless-stopped
+    build: 
+      context: ./owncloud
+      args:
+        OWNCLOUD_VERSION: 10.0.2
+    container_name: "owncloud"    
     links:
       - postdb
     volumes:
-      - ~/owncloud:/var/www/html
+      - ~/owncloud/data:/var/www/html/data
+      - ~/owncloud/config:/var/www/html/config
+      - ~/owncloud/apps:/var/www/html/apps
     networks:
       - owncloud
       - local

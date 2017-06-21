@@ -6,7 +6,7 @@ setup:
 
 	@chmod -R 777 ~/media ~/plex/config ~/plex/transcode
 	#Create Folders for Owncloud and Postgres
-	@mkdir -p ~/owncloud ~/postgres-data
+	@mkdir -p ~/owncloud/data ~/owncloud/apps ~/owncloud/config ~/postgres-data
 	
 	#Build the images
 	@docker-compose build
@@ -24,6 +24,7 @@ restart: stop start
 
 clean: stop
 	@docker-compose rm --force
+	@docker-compose down
 	@find . -name \*.pyc -delete
 
 build:

@@ -14,14 +14,19 @@ services:
     networks:
       - owncloud
   owncloud:
-    container_name: "owncloud"
-    image: owncloud
+    build: 
+      context: ./owncloud
+      args:
+        OWNCLOUD_VERSION: 10.0.2
+    container_name: "owncloud"    
     ports:
       - "81:80"
     links:
       - postdb
     volumes:
-      - ./data:/var/www/html
+      - ~/owncloud/data:/var/www/html/data
+      - ~/owncloud/config:/var/www/html/config
+      - ~/owncloud/apps:/var/www/html/apps
     networks:
       - owncloud
 
