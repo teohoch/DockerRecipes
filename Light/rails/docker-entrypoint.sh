@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-sleep 2
+
 echo "Installing and updating gems"
 
 #bundle install && bundle update
