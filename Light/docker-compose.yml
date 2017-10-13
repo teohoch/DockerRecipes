@@ -12,6 +12,7 @@ services:
       - owncloud
       - rails      
       - plex
+      - neargas
     networks:
       - local
 
@@ -41,6 +42,8 @@ services:
       POSTGRES_PASSWORD: "mysecretpassword"
       OWNCLOUD_PASSWORD: "mysecretpassword"
       RAILS_PASSWORD: "mysecretpassword"
+      BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
+      POSTGRES_USER: "postgres"
     ports:
       - 5432:5432
     volumes:
@@ -49,6 +52,7 @@ services:
     networks:
       - owncloud
       - rails
+      - neargas
   owncloud:
     build: 
       context: ./owncloud
@@ -77,6 +81,20 @@ services:
       CATAN_LEADERBOARDS_DATABASE_PASSWORD: "mysecretpassword"
     networks:
       - rails
+      - local
+
+  neargas:
+    build: NearGas/
+    container_name: "neargas-light"
+    restart: unless-stopped
+    depends_on:
+      - postdb
+    links:
+      - postdb
+    environment:
+      BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
+    networks:
+      - neargas
       - local
 
   plex:
@@ -113,5 +131,7 @@ networks:
   rails:
     driver: bridge
   owncloud:
+    driver: bridge
+  neargas:
     driver: bridge
 
