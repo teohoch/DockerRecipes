@@ -13,6 +13,7 @@ services:
       - rails      
       - plex
       - neargas
+      - jenkins
     networks:
       - local
 
@@ -121,6 +122,13 @@ services:
       - ~/plex/config:/config
       - ~/plex/transcode:/transcode
       - ~/media:/data
+    networks:
+      - local
+
+  jenkins:
+    image: jenkins/jenkins
+    container_name: "jenkins-light"
+    restart: unless-stopped
     networks:
       - local
 
