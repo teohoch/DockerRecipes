@@ -3,7 +3,7 @@ version: '2'
 services:
   postdb:
     image: postgres:alpine
-    container_name: "postdb-light"
+    container_name: "postdb-neargas-testing"
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: "mysecretpassword"
@@ -21,7 +21,7 @@ services:
 
   neargas:
     build: .
-    container_name: "neargas-light"
+    container_name: "neargas-testing"
     restart: unless-stopped
     depends_on:
       - postdb
