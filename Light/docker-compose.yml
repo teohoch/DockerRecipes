@@ -10,7 +10,7 @@ services:
     depends_on:
       - portainer
       - owncloud
-      - rails      
+      - rails
       - plex
       - neargas
       - jenkins
@@ -39,7 +39,7 @@ services:
     image: postgres:alpine
     container_name: "postdb-light"
     restart: unless-stopped
-    environment: 
+    environment:
       POSTGRES_PASSWORD: "mysecretpassword"
       OWNCLOUD_PASSWORD: "mysecretpassword"
       RAILS_PASSWORD: "mysecretpassword"
@@ -55,11 +55,11 @@ services:
       - rails
       - neargas
   owncloud:
-    build: 
+    build:
       context: ./owncloud
       args:
         OWNCLOUD_VERSION: 10.0.2
-    container_name: "owncloud-light"    
+    container_name: "owncloud-light"
     links:
       - postdb
     volumes:
@@ -126,9 +126,12 @@ services:
       - local
 
   jenkins:
-    image: jenkins/jenkins
+    build:
+      context: ./jenkins
     container_name: "jenkins-light"
     restart: unless-stopped
+    volumes:
+      - ~/jenkins_home:/var/jenkins_home
     networks:
       - local
 
@@ -142,4 +145,3 @@ networks:
     driver: bridge
   neargas:
     driver: bridge
-

@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  postdb:
+    image: postgres:alpine
+    container_name: "postdb-light"
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: "mysecretpassword"
+      OWNCLOUD_PASSWORD: "mysecretpassword"
+      RAILS_PASSWORD: "mysecretpassword"
+      BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
+      POSTGRES_USER: "postgres"
+    ports:
+      - 5432:5432
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+      - ~/postgres-data:/var/lib/postgresql/data
+    networks:
+      - neargas
+
+  neargas:
+    build: .
+    container_name: "neargas-light"
+    restart: unless-stopped
+    depends_on:
+      - postdb
+    links:
+      - postdb
+    environment:
+      BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
+    networks:
+      - neargas
+
+networks:
+  neargas:
+    driver: bridge
