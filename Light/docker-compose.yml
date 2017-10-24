@@ -46,7 +46,7 @@ services:
       BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
       POSTGRES_USER: "postgres"
     ports:
-      - 5435:5432
+      - 5432:5432
     volumes:
       - ./scripts:/docker-entrypoint-initdb.d
       - ~/postgres-data:/var/lib/postgresql/data
@@ -59,7 +59,7 @@ services:
       context: ./owncloud
       args:
         OWNCLOUD_VERSION: 10.0.2
-    container_name: "owncloud"    
+    container_name: "owncloud-light"    
     links:
       - postdb
     volumes:
@@ -100,7 +100,7 @@ services:
 
   plex:
     container_name: plex-light
-    image: plexinc/pms-docker
+    image: plexinc/pms-docker:public
     restart: unless-stopped
     ports:
       - 32400:32400/tcp
