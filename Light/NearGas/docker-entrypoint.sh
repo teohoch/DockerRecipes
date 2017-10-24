@@ -3,7 +3,11 @@ set -e
 sleep 2
 echo "Installing and updating gems"
 
-git pull
+git fetch --all
+git reset --hard origin/master
+
+cp -fr /database.yml /neargass/config/database.yml
+
 
 bundle install && bundle update
 

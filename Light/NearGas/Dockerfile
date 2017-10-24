@@ -14,16 +14,17 @@ RUN apt-get install -y libqt4-webkit libqt4-dev xvfb
 # for a JS runtime
 RUN apt-get install -y nodejs
 
-RUN git clone -b deploy https://github.com/teohoch/Bencinera.git
+RUN git clone https://github.com/teohoch/neargass.git
 
-ENV APP_HOME /Bencinera
+ENV APP_HOME /neargass
 WORKDIR $APP_HOME
 
-RUN cd /Bencinera
+RUN cd /neargass
 
 RUN bundle install
 
 COPY docker-entrypoint.sh /usr/local/bin/
+COPY database.yml /database.yml
 RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
 
