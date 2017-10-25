@@ -22,6 +22,7 @@ WORKDIR $APP_HOME
 RUN cd /neargass
 
 RUN bundle install --jobs 3 --quiet
+
 RUN bundle update --jobs 3 --quiet
 
 COPY docker-entrypoint.sh /usr/local/bin/
