@@ -14,8 +14,10 @@ services:
     volumes:
       - ./scripts:/docker-entrypoint-initdb.d
       - ~/postgres-data:/var/lib/postgresql/data
+      ports:
+        - 5432
     networks:
-      - neargas
+      - neargas-testing
 
   neargas:
     build: .
@@ -28,7 +30,7 @@ services:
     environment:
       BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
     networks:
-      - neargas
+      - neargas-testing
 
 networks:
   neargas:
