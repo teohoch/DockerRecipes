@@ -2,30 +2,23 @@ version: '2'
 
 services:
   postdb:
-    image: postgres:alpine
+    build: psql/
     container_name: "postdb-neargas-testing"
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: "mysecretpassword"
-      OWNCLOUD_PASSWORD: "mysecretpassword"
-      RAILS_PASSWORD: "mysecretpassword"
       BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
       POSTGRES_USER: "postgres"
-    volumes:
-      - ./scripts:/docker-entrypoint-initdb.d
-      - ~/postgres-data:/var/lib/postgresql/data
     ports:
       - 5432
     networks:
       - neargas-testing
 
   neargas:
-    build: .
+    build: neargas/
     container_name: "neargas-testing"
     restart: unless-stopped
     depends_on:
-      - postdb
-    links:
       - postdb
     environment:
       BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
