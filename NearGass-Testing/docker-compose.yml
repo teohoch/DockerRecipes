@@ -11,8 +11,6 @@ services:
       RAILS_PASSWORD: "mysecretpassword"
       BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
       POSTGRES_USER: "postgres"
-    ports:
-      - 5432:5432
     volumes:
       - ./scripts:/docker-entrypoint-initdb.d
       - ~/postgres-data:/var/lib/postgresql/data
