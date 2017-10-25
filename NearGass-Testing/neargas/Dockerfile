@@ -21,7 +21,8 @@ WORKDIR $APP_HOME
 
 RUN cd /neargass
 
-RUN bundle install
+RUN bundle install --job 3 --quiet
+RUN bundle update --job 3 --quiet
 
 COPY docker-entrypoint.sh /usr/local/bin/
 COPY database.yml /database.yml
