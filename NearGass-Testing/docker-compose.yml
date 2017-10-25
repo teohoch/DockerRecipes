@@ -33,5 +33,5 @@ services:
       - neargas-testing
 
 networks:
-  neargas:
+  neargas-testing:
     driver: bridge
