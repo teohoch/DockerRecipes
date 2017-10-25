@@ -15,7 +15,7 @@ services:
       - ./scripts:/docker-entrypoint-initdb.d
       - ~/postgres-data:/var/lib/postgresql/data
     ports:
-        - 5432
+      - 5432
     networks:
       - neargas-testing
 
@@ -33,5 +33,5 @@ services:
       - neargas-testing
 
 networks:
-  neargas:
+  neargas-testing:
     driver: bridge
