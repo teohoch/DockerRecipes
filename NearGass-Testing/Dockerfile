@@ -25,7 +25,8 @@ RUN bundle install
 
 COPY docker-entrypoint.sh /usr/local/bin/
 COPY database.yml /database.yml
-RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
+COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 CMD ["rails", "server", "-p", "3000", "-b", "0.0.0.0"]
