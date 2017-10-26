@@ -9,8 +9,6 @@ services:
       POSTGRES_PASSWORD: "mysecretpassword"
       BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
       POSTGRES_USER: "postgres"
-    ports:
-      - 5432
     networks:
       - neargas-testing
 

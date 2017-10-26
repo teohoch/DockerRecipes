@@ -14,7 +14,7 @@ RUN apt-get install -y libqt4-webkit libqt4-dev xvfb
 # for a JS runtime
 RUN apt-get install -y nodejs
 
-RUN git clone https://github.com/teohoch/neargass.git
+RUN git clone -b prerelease https://github.com/teohoch/neargass.git
 
 ENV APP_HOME /neargass
 WORKDIR $APP_HOME

@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+git pull origin prerelease
+
 cp -fr /database.yml /neargass/config/database.yml
 
 bundle install  --jobs 3 --quiet && bundle update  --jobs 3 --quiet
