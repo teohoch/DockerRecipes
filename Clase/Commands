@@ -1,0 +1,32 @@
+# Commands
+
+#Rails Demo
+docker build -t "demo:rails" .
+
+docker run -d -p 3000:3000 demo:rails
+
+docker ps
+
+docker run -d -p 3000:3000 --name demo_rails demo:rails
+
+docker ps
+docker stop demo_rails
+
+#NodeJs Demo
+
+docker build -t "demo:nodejs"
+
+docker run -d -p 8080:8080 --name demo_nodeJs demo:nodejs
+
+docker ps
+
+docker stop demo_nodeJS
+
+
+docker exec -it "workshop_rails" bash
+
+# Stop All containers
+
+docker stop $(docker ps -a -q)
+
+docker run -d -p 800:3000 --name workshop_rails --volume=/home/teohoch/workshop-images:/gentelella-rails-demo/examples/rails.5.0.x/public/images-test/ workshop:rails
