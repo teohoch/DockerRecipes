@@ -21,11 +21,13 @@ WORKDIR $APP_HOME
 
 RUN cd /DocArk
 
-RUN bundle install
+RUN bundle update
+RUN rails assets:precompile
 
 COPY docker-entrypoint.sh /usr/local/bin/
 COPY database.yml /database.yml
+COPY secrets.yml.key /secrets.yml.key
 RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["rails", "server", "-p", "3000", "-b", "0.0.0.0"]
+CMD ["rails", "server", "-p", "3000", "-b", "0.0.0.0","-e","production"]
