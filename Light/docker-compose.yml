@@ -45,6 +45,7 @@ services:
       OWNCLOUD_PASSWORD: "mysecretpassword"
       RAILS_PASSWORD: "mysecretpassword"
       BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
+      DOCARK_DATABASE_PASSWORD: "mysecretpassword"
       POSTGRES_USER: "postgres"
     ports:
       - 5432:5432
@@ -55,6 +56,7 @@ services:
       - owncloud
       - rails
       - neargas
+      - docark
   owncloud:
     build:
       context: ./owncloud
@@ -97,6 +99,20 @@ services:
       BENCINERA_DATABASE_PASSWORD: "mysecretpassword"
     networks:
       - neargas
+      - local
+
+  docark:
+    build: DocArk/
+    container_name: "docark-light"
+    restart: unless-stopped
+    depends_on:
+      - postdb
+    links:
+      - postdb
+    environment:
+      DOCARK_DATABASE_PASSWORD: "mysecretpassword"
+    networks:
+      - docark
       - local
 
   plex:
@@ -146,4 +162,6 @@ networks:
   owncloud:
     driver: bridge
   neargas:
+    driver: bridge
+  docark:
     driver: bridge
