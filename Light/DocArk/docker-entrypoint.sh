@@ -14,5 +14,7 @@ bundle install && bundle update
 
 echo "Creating database if it doesn't exist and runing migrations"
 rake db:migrate 2>/dev/null || rake db:setup
+rails assets:clean
+rails assets:precompile
 
 exec "$@"
