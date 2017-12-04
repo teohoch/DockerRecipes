@@ -13,16 +13,19 @@ RUN apt-get install -y libqt4-webkit libqt4-dev xvfb
 
 # for a JS runtime
 RUN apt-get install -y nodejs
-
-RUN git clone https://github.com/teohoch/DocArk.git
+RUN gem install bundler
+RUN git clone -b deploy  https://github.com/teohoch/DocArk.git
 
 ENV APP_HOME /DocArk
 WORKDIR $APP_HOME
 
 RUN cd /DocArk
 
-RUN bundle update
-RUN rails assets:precompile
+
+
+RUN bundle install
+COPY secrets.yml.key /DocArk/config/secrets.yml.key
+RUN rails assets:precompile --trace
 
 COPY docker-entrypoint.sh /usr/local/bin/
 COPY database.yml /database.yml
